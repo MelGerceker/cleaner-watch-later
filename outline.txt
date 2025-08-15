@@ -1,0 +1,33 @@
+1-enable api/login
+
+-- Google cloud project with api v3 enabled
+--OAuth consent screen, OAuth configuration created
+--created OAuth credientials, OAuth client ID ,desktop app
+
+client_secret.json downloaded
+
+--setup workspace
+python -m venv .venv
+.venv\Scripts\Activate.ps1
+pip install google-auth google-auth-oauthlib google-api-python-client
+
+create test users, add gmail then run
+python testForAPI.py
+
+--test API call works (testForAPI.py) 
+
+2-get video list of watch later
+
+-- get playlistId='WL' 
+-- get attributes of each video
+3-handle pagination
+
+-- nextPageToken
+
+4-filter by unwatched
+
+-- compare with watch history
+
+5-output
+
+-- local html with clickable links
