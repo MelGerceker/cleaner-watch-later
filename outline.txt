@@ -31,3 +31,6 @@ python testForAPI.py
 5-output
 
 -- local html with clickable links
+
+CHANGES:
+Youtube API no longer provides the "Watch Later" playlist, therefore, it was downloaded from Google Takeout

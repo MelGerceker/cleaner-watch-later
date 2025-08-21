@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>YouTube Watch Later List</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <h1>Watch Later</h1>
+
+    <span id="count" class="muted"></span>
+
+    <table>
+        <thead>
+            <tr>
+                <th class="thumb">Thumbnail</th>
+                <th>Title</th>
+                <th>Channel</th>
+                <th>Link</th>
+            </tr>
+        </thead>
+        <tbody id="rows"></tbody>
+    </table>
+
+    <script type="module">
+        const rowsEl = document.getElementById('rows');
+        const countEl = document.getElementById('count');
+
+        const escapeHtml = (s) =>
+            (s || "").replace(/[&<>"']/g, c => ({
+                '&': '&amp;', '<': '&lt;', '>': '&gt;',
+                '"': '&quot;', "'": '&#39;'
+            }[c]));
+
+        const render = (data) => {
+            rowsEl.innerHTML = data.map(v => `
+        <tr>
+          <td class="thumb"><img loading="lazy" src="${v.thumb}" alt=""></td>
+          <td>${escapeHtml(v.title)}</td>
+          <td>${escapeHtml(v.channel)}</td>
+          <td><a href="${v.url}" target="_blank" rel="noopener">Open</a></td>
+        </tr>
+      `).join('');
+            countEl.textContent = `${data.length} videos`;
+        };
+
+        // Load the generated JSON (same folder)
+        fetch('data.json')
+            .then(r => r.json())
+            .then(json => render(json))
+            .catch(err => {
+                rowsEl.innerHTML = `<tr><td colspan="4">Failed to load data.json: ${err}</td></tr>`;
+            });
+
+    </script>
+</body>
+
+</html>

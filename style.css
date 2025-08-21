@@ -1,0 +1,40 @@
+        :root{
+            --red:#FF0000;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+            margin: 24px;
+        }
+
+        h1 {
+            color: var(--red);
+            margin: 0 0 12px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            padding: 8px 10px;
+            border-bottom: 1px solid #eee;
+            vertical-align: middle;
+        }
+
+        img {
+            width: 120px;
+            height: 67px;
+            object-fit: cover;
+            border-radius: 6px;
+        }
+
+        .thumb {
+            width: 120px;
+        }
+
+        .muted {
+            color: #666;
+        }
