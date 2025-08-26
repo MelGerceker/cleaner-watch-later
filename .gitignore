@@ -3,4 +3,6 @@ token.json
 .venv
 personalData/
 __pycache__/
-data.json
+data/watch-later.csv
+data/detailed-watch-later.json
+data/watched_ids.json

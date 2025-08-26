@@ -37,7 +37,7 @@ def fetch_video_meta(youtube, ids: list[str]) -> Dict[str, Dict[str, str]]:
     return meta
 
 # Returns data.json used by index.html
-def write_json(ids: list[str], meta: Dict[str, Dict[str, str]], out_file: Path = Path("data.json")):
+def write_json(ids: list[str], meta: Dict[str, Dict[str, str]], out_file: Path = Path("data/detailed-watch-later.json")):
     data = []
     for vid in ids:
         info = meta.get(vid, {"title": "(unavailable)", "channel": ""})

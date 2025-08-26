@@ -22,10 +22,6 @@ def _extract_video_id(url: str) -> Optional[str]:
 
 # Scans watch-history.html for links, returns set of normalized IDs
 def load_watched_ids_from_html(path: Path) -> Set[str]:
-    """
-    Parse a Google Takeout 'watch-history.html' file and return a set of video IDs.
-    Works even if the page has lots of styling/extra markup.
-    """
     html = path.read_text(encoding="utf-8", errors="ignore")
     soup = BeautifulSoup(html, "lxml")
 

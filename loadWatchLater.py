@@ -1,7 +1,7 @@
 from pathlib import Path
 import csv
 
-CSV_PATH = Path("personalData/watch-later.csv")
+CSV_PATH = Path("data/watch-later.csv")
 
 #Returns ordered list of video IDs
 #Column names: Video ID and Added Date
