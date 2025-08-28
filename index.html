@@ -48,7 +48,7 @@
         };
 
         // Load the generated JSON (same folder)
-        fetch('data.json')
+  fetch('data/detailed-watch-later.json?ts=' + Date.now())   // cache-bust
             .then(r => r.json())
             .then(json => render(json))
             .catch(err => {

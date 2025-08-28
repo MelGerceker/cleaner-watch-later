@@ -1,7 +1,9 @@
 from pathlib import Path
 import csv
+import json
 
 CSV_PATH = Path("data/watch-later.csv")
+OUT_JSON = Path("data/watch_later_ids.json")
 
 #Returns ordered list of video IDs
 #Column names: Video ID and Added Date
@@ -11,6 +13,8 @@ def load_watch_later_ids(path: Path = CSV_PATH) -> list[str]:
         raise FileNotFoundError(f"CSV not found at: {path}")
 
     ids: list[str] = []
+    seen: set[str] = set()
+
     with path.open("r", encoding="utf-8", newline="") as f:
         r = csv.DictReader(f)
 
@@ -21,7 +25,6 @@ def load_watch_later_ids(path: Path = CSV_PATH) -> list[str]:
                 "Ensure the CSV has exactly: 'Video ID,Added Date'."
             )
 
-        seen: set[str] = set()
         for row in r:
             vid = (row["Video ID"] or "").strip()
             if vid and vid not in seen:
@@ -30,8 +33,12 @@ def load_watch_later_ids(path: Path = CSV_PATH) -> list[str]:
 
     return ids
 
+def main():
+    ids = load_watch_later_ids(CSV_PATH)
+    OUT_JSON.parent.mkdir(parents=True, exist_ok=True)
+    OUT_JSON.write_text(json.dumps(ids, ensure_ascii=False, indent=2), encoding="utf-8")
+    print(f"Wrote {len(ids)} IDs → {OUT_JSON.resolve()}")
+
 
 if __name__ == "__main__":
-    vids = load_watch_later_ids()
-    print(f"Loaded {len(vids)} IDs.")
-    print("Sample:", vids[:5])
+    main()

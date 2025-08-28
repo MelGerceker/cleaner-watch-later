@@ -6,3 +6,5 @@ __pycache__/
 data/watch-later.csv
 data/detailed-watch-later.json
 data/watched_ids.json
+data/watch_later_ids.json
+data/meta_cache.json
