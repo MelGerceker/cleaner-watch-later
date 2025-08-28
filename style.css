@@ -1,40 +1,60 @@
-        :root{
-            --red:#FF0000;
-        }
+:root {
+    --red: #FF0000;
+}
 
-        body {
-            font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-            margin: 24px;
-        }
+body {
+    font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    margin: 24px;
+}
 
-        h1 {
-            color: var(--red);
-            margin: 0 0 12px;
-        }
+h1 {
+    color: var(--red);
+    margin: 0 0 12px;
+}
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
 
-        th,
-        td {
-            padding: 8px 10px;
-            border-bottom: 1px solid #eee;
-            vertical-align: middle;
-        }
+th,
+td {
+    padding: 8px 10px;
+    border-bottom: 1px solid #eee;
+    vertical-align: middle;
+}
 
-        img {
-            width: 120px;
-            height: 67px;
-            object-fit: cover;
-            border-radius: 6px;
-        }
+img {
+    width: 120px;
+    height: 67px;
+    object-fit: cover;
+    border-radius: 6px;
+}
 
-        .thumb {
-            width: 120px;
-        }
+.thumb {
+    width: 120px;
+}
 
-        .muted {
-            color: #666;
-        }
+.muted {
+    color: #666;
+}
+
+.controls {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    margin: 12px 0;
+}
+
+button {
+    padding: 6px 10px;
+    border: 1px solid #ddd;
+    background: #f8f8f8;
+    cursor: pointer;
+    border-radius: 6px;
+}
+
+button.active {
+    background: #e9f3ff;
+    border-color: #8ab4f8;
+}

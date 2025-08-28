@@ -11,7 +11,12 @@
 <body>
     <h1>Watch Later</h1>
 
-    <span id="count" class="muted"></span>
+    <div class="controls">
+        <button id="btnAll" class="active">All</button>
+        <button id="btnUnwatched">Unwatched</button>
+        <button id="btnWatched">Watched</button>
+        <span id="count" class="muted"></span>
+    </div>
 
     <table>
         <thead>
@@ -29,31 +34,69 @@
         const rowsEl = document.getElementById('rows');
         const countEl = document.getElementById('count');
 
+        const btnAll = document.getElementById('btnAll');
+        const btnUnwatched = document.getElementById('btnUnwatched');
+        const btnWatched = document.getElementById('btnWatched');
+
         const escapeHtml = (s) =>
             (s || "").replace(/[&<>"']/g, c => ({
                 '&': '&amp;', '<': '&lt;', '>': '&gt;',
                 '"': '&quot;', "'": '&#39;'
             }[c]));
 
-        const render = (data) => {
+        let all = [];        // [{id, title, channel, url, thumb}]
+        let watchedSet = new Set(); // fast lookup
+        let mode = 'all';    // 'all' | 'unwatched' | 'watched'
+
+
+        const render = () => {
+            let data = all;
+            // comparison logic
+            if (mode === 'unwatched') data = all.filter(v => !watchedSet.has(v.id));
+            if (mode === 'watched') data = all.filter(v => watchedSet.has(v.id));
+
             rowsEl.innerHTML = data.map(v => `
-        <tr>
-          <td class="thumb"><img loading="lazy" src="${v.thumb}" alt=""></td>
-          <td>${escapeHtml(v.title)}</td>
-          <td>${escapeHtml(v.channel)}</td>
-          <td><a href="${v.url}" target="_blank" rel="noopener">Open</a></td>
-        </tr>
+            <tr>
+            <td class="thumb"><img loading="lazy" src="${v.thumb}" alt=""></td>
+            <td>${escapeHtml(v.title)}</td>
+            <td>${escapeHtml(v.channel)}</td>
+            <td><a href="${v.url}" target="_blank" rel="noopener">Open</a></td>
+            </tr>
       `).join('');
-            countEl.textContent = `${data.length} videos`;
+
+        // update counter and button
+            const totals = `(${data.length} shown • ${all.length} total)`;
+            if (mode === 'unwatched') {
+                countEl.textContent = `Unwatched ${totals}`;
+            } else if (mode === 'watched') {
+                countEl.textContent = `Watched ${totals}`;
+            } else {
+                countEl.textContent = `All ${totals}`;
+            }
+
+            [btnAll, btnUnwatched, btnWatched].forEach(b => b.classList.remove('active'));
+            (mode === 'all' ? btnAll : mode === 'unwatched' ? btnUnwatched : btnWatched)
+                .classList.add('active');
         };
 
-        // Load the generated JSON (same folder)
-  fetch('data/detailed-watch-later.json?ts=' + Date.now())   // cache-bust
-            .then(r => r.json())
-            .then(json => render(json))
+        // Load both watch later and watch history
+        const wlP = fetch('data/detailed-watch-later.json?ts=' + Date.now()).then(r => r.json());
+        const whP = fetch('data/watched_ids.json?ts=' + Date.now()).then(r => r.json());
+
+        Promise.all([wlP, whP])
+            .then(([wl, watchedIds]) => {
+                all = wl || [];
+                watchedSet = new Set(watchedIds || []);
+                render();
+            })
             .catch(err => {
-                rowsEl.innerHTML = `<tr><td colspan="4">Failed to load data.json: ${err}</td></tr>`;
+                rowsEl.innerHTML = `<tr><td colspan="4">Failed to load data: ${err}</td></tr>`;
             });
+
+        // Buttons
+        btnAll.addEventListener('click', () => { mode = 'all'; render(); });
+        btnUnwatched.addEventListener('click', () => { mode = 'unwatched'; render(); });
+        btnWatched.addEventListener('click', () => { mode = 'watched'; render(); });
 
     </script>
 </body>
