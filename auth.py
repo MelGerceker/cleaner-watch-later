@@ -7,6 +7,7 @@ SCOPES = ["https://www.googleapis.com/auth/youtube.readonly"]
 CLIENT_SECRET_FILE = Path("client_secret.json")  # download from Google Cloud Console
 TOKEN_FILE = Path("token.json")  # created after first login
 
+#TODO: Catch RefreshError 
 def get_credentials() -> Credentials:
 
     creds = None

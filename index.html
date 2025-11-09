@@ -18,6 +18,12 @@
         <span id="count" class="muted"></span>
     </div>
 
+    <div>
+        <button onclick="document.location='sudoku.html'">
+            Sudoku Section
+        </button>
+    </div>
+
     <table>
         <thead>
             <tr>
@@ -64,7 +70,7 @@
             </tr>
       `).join('');
 
-        // update counter and button
+            // update counter and button
             const totals = `(${data.length} shown • ${all.length} total)`;
             if (mode === 'unwatched') {
                 countEl.textContent = `Unwatched ${totals}`;

@@ -20,7 +20,7 @@ def get_credentials() -> Credentials:
     # If no creds or invalid, either refresh or run browser login
     if not creds or not creds.valid:
         if creds and creds.expired and creds.refresh_token:
-            # Refresh silently using the refresh token
+            # Refresh silently
             creds.refresh(Request())
         else:
             # First-time login: open a local browser for OAuth
@@ -45,7 +45,7 @@ def main():
     youtube = build("youtube", "v3", credentials=creds) #allows to make API calls
 
     # Minimal API call for testing
-    # part controls which fields you want; these are common, safe choices
+    # part controls which fields you want
     resp = youtube.channels().list(
         part="snippet,contentDetails,statistics",
         mine=True
