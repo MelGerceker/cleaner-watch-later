@@ -94,37 +94,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-"""
-def main():
-    # Auth
-    creds = get_credentials()
-    yt = build("youtube", "v3", credentials=creds)
-
-    # Load IDs from Takeout CSV
-    csv_path = Path("personalData/watch-later.csv")
-    ids = load_watch_later_ids(csv_path)
-    if not ids:
-        print("No IDs found in watch-later.csv")
-        return
-
-    # Fetch metadata
-    meta = fetch_video_meta(yt, ids)
-    write_json(ids, meta, Path("data.json"))
-
-    #missing = [v for v in ids if v not in meta]  # deleted/private/unavailable
-    #print(f"Resolved {len(meta)} via API; {len(missing)} missing.")
-
-
-    # Print a sample
-    
-    for vid in ids[:10]:
-        info = meta.get(vid, {"title": "(unavailable)", "channel": ""})
-        print(f"- {info['title']} — {info['channel']} — https://youtu.be/{vid}")
-    
-
-if __name__ == "__main__":
-    main()
-
-
-"""
