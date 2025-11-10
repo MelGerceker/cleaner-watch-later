@@ -32,6 +32,7 @@
             <tr>
                 <th class="thumb">Thumbnail</th>
                 <th>Title</th>
+                <th>Duration</th>
                 <th>Channel</th>
                 <th>Link</th>
             </tr>
@@ -53,7 +54,7 @@
                 '"': '&quot;', "'": '&#39;'
             }[c]));
 
-        let all = [];        // [{id, title, channel, url, thumb}]
+        let all = [];        // [{id, title, duration, channel, url, thumb}]
         let watchedSet = new Set(); // fast lookup
         let mode = 'all';    // 'all' | 'unwatched' | 'watched'
 
@@ -68,6 +69,7 @@
             <tr>
             <td class="thumb"><img loading="lazy" src="${v.thumb}" alt=""></td>
             <td>${escapeHtml(v.title)}</td>
+            <td>${escapeHtml(v.duration || "")}</td>
             <td>${escapeHtml(v.channel)}</td>
             <td><a href="${v.url}" target="_blank" rel="noopener">Open</a></td>
             </tr>
@@ -89,7 +91,7 @@
         };
 
         // Load both watch later and watch history
-        const wlP = fetch('data/sudoku-videos.json?ts=' + Date.now()).then(r => r.json());
+        const wlP = fetch('data/sudoku-uploads.json?ts=' + Date.now()).then(r => r.json());
         const whP = fetch('data/watched_ids.json?ts=' + Date.now()).then(r => r.json());
 
         Promise.all([wlP, whP])
@@ -99,7 +101,7 @@
                 render();
             })
             .catch(err => {
-                rowsEl.innerHTML = `<tr><td colspan="4">Failed to load data: ${err}</td></tr>`;
+                rowsEl.innerHTML = `<tr><td colspan="5">Failed to load data: ${err}</td></tr>`;
             });
 
         // Buttons

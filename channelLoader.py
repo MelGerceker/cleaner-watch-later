@@ -8,7 +8,7 @@ from auth import get_credentials
 from detailedWatchLater import _save_json, _ensure_meta_cache, _build_detailed, META_CACHE
 
 
-OUT_JSON   = "data/sudoku-uploads.json"
+OUT_JSON   = Path("data/sudoku-uploads.json")
 
 # TODO: Fill with the real channel ID, but does youtube use @handle now?
 # TODO: Get this input from user?
@@ -57,12 +57,17 @@ def _fetch_all_upload_ids(youtube, uploads_playlist_id: str) -> list[str]:
             
             for item in resp.get("items", []):
                 vid = item.get("snippet", {}).get("resourceId", {}).get("videoId")
-                all_ids.append(vid)
 
                 if not vid:
                     continue
-            
+                all_ids.append(vid)
+
+            #show progress
+            print(f"Fetched {len(all_ids)} items total so far.")
+
             page_token = resp.get("nextPageToken")
+            if not page_token:
+                break
         
         except HttpError as e:
             print("Failed to fetch all videos due to API error")
@@ -84,7 +89,7 @@ def main() -> None:
         raise SystemExit(f"Could not find uploads playlist for channel {CHANNEL_ID}")
     
     #for testing:
-    print(_get_uploads_playlist_id(youtube, "UCC-UOdK8-mIjxBQm_ot1T-Q"))
+    print(f"Uploads playlist ID: {uploads_id}")
 
     # Fetch all upload IDs
     ids = _fetch_all_upload_ids(youtube, uploads_id)

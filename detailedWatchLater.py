@@ -24,7 +24,7 @@ def _save_json(p: Path, obj):
     p.write_text(json.dumps(obj, ensure_ascii=False, indent=2), encoding="utf-8")
 
 
-# Returns: video_id: {"title": str, "channel": str}
+# Returns: video_id: {"title": str, "channel": str, "duration":str}
 def _fetch_video_meta(youtube, ids: list[str]) -> dict[str, dict[str, str]]:
     meta: dict[str, dict[str, str]] = {}
 
@@ -32,7 +32,7 @@ def _fetch_video_meta(youtube, ids: list[str]) -> dict[str, dict[str, str]]:
         batch = ids[i:i+BATCH_SIZE]
         try:
             resp = youtube.videos().list(
-                part="snippet",
+                part="snippet,contentDetails",
                 id=",".join(batch),
                 maxResults=BATCH_SIZE 
             ).execute()
@@ -43,18 +43,20 @@ def _fetch_video_meta(youtube, ids: list[str]) -> dict[str, dict[str, str]]:
         for item in resp.get("items", []):
             vid = item.get("id")
             sn = item.get("snippet", {})
+            cd = item.get("contentDetails", {})
             if not vid:
                 continue
             meta[vid] = {
                 "title": sn.get("title", ""),
-                "channel": sn.get("channelTitle", "")
+                "channel": sn.get("channelTitle", ""),
+                "duration": cd.get("duration",""), #TODO: still returns ex. PT2H13M4S
             }
     return meta
 
 # Load cache, fetch missing and save
 def _ensure_meta_cache(ids: list[str]) -> dict[str, dict[str, str]]:
     cache: dict[str, dict[str, str]] = _load_json(META_CACHE, {})
-    missing = [v for v in ids if v not in cache]
+    missing = [v for v in ids if v not in cache or "duration" not in cache[v]] # api calls were made without the duration
     if missing:
         # auth
         creds = get_credentials()
@@ -71,13 +73,14 @@ def _ensure_meta_cache(ids: list[str]) -> dict[str, dict[str, str]]:
 def _build_detailed(ids: list[str], meta: dict[str, dict[str, str]]) -> list[dict]:
     out = []
     for vid in ids:
-        info = meta.get(vid, {"title": "(unavailable)", "channel": ""})
+        info = meta.get(vid, {"title": "(unavailable)", "channel": "", "duration":""},)
         out.append({
             "id": vid,
             "title": info["title"],
             "channel": info["channel"],
+            "duration": info.get("duration", ""),
             "url":  f"https://youtu.be/{vid}",
-            "thumb": f"https://i.ytimg.com/vi/{vid}/hqdefault.jpg"
+            "thumb": f"https://i.ytimg.com/vi/{vid}/hqdefault.jpg",
         })
     return out
 
