@@ -56,7 +56,7 @@ def _fetch_video_meta(youtube, ids: list[str]) -> dict[str, dict[str, str]]:
 # Load cache, fetch missing and save
 def _ensure_meta_cache(ids: list[str]) -> dict[str, dict[str, str]]:
     cache: dict[str, dict[str, str]] = _load_json(META_CACHE, {})
-    missing = [v for v in ids if v not in cache or "duration" not in cache[v]] # api calls were made without the duration
+    missing = [v for v in ids if v not in cache or "duration" not in cache[v]]
     if missing:
         # auth
         creds = get_credentials()
@@ -78,13 +78,47 @@ def _build_detailed(ids: list[str], meta: dict[str, dict[str, str]]) -> list[dic
             "id": vid,
             "title": info["title"],
             "channel": info["channel"],
-            "duration": info.get("duration", ""),
+            "duration": _parse_iso_duration(info.get("duration", "")),
             "url":  f"https://youtu.be/{vid}",
             "thumb": f"https://i.ytimg.com/vi/{vid}/hqdefault.jpg",
         })
     return out
 
+#Convert Youtube API duration ISO: ex. from PT2H34M12S to 2:34:12
+def _parse_iso_duration(iso_str):
+    hours = 0
+    minutes = 0
+    seconds = 0
+    
+    #empty
+    if not iso_str:
+        return ""
+    
+    if not iso_str.startswith("PT"):
+        print(f"[WARN] Unexpected duration format: {iso_str!r}")
+        return ""
+    
+    iso_array = iso_str.split("PT")[1] # remove PT
+    
+    if iso_array.find("H") != -1:
+        hours = int(iso_array.split("H")[0])
+        iso_array=iso_array.split("H")[1] # after H
+        
+    if iso_array.find("M") != -1:
+        minutes = int(iso_array.split("M")[0])
+        iso_array=iso_array.split("M")[1] # after M
+    
+    if iso_array.find("S") != -1:
+        seconds = int(iso_array.split("S")[0])
 
+    if hours > 0:
+        return f"{hours}:{minutes:02}:{seconds:02}"
+    elif minutes > 0:
+        return f"{minutes}:{seconds:02}"
+    else:
+        return f"{seconds}s"
+    
+    
 def main():
     ids: list[str] = _load_json(IDS_JSON, [])
     if not ids:

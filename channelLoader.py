@@ -99,8 +99,7 @@ def main() -> None:
 
     meta = _ensure_meta_cache(ids)
 
-    # Current format [{"id", "title", "channel", "url", "thumb"}]
-    # TODO: Add duration of vids?
+    # Current format [{"id", "title", "duration", "channel", "url", "thumb"}]
     detailed = _build_detailed(ids, meta)
     _save_json(OUT_JSON, detailed)
     print(f"Wrote {len(detailed)} items → {OUT_JSON.resolve()}")
