@@ -23,6 +23,8 @@
         <button id="btnAll" class="active">All</button>
         <button id="btnUnwatched">Unwatched</button>
         <button id="btnWatched">Watched</button>
+        <button id="btnMax">Max Duration</button>
+        <button id="btnMin">Min Duration</button>
         <span id="count" class="muted"></span>
     </div>
 
@@ -47,6 +49,41 @@
         const btnAll = document.getElementById('btnAll');
         const btnUnwatched = document.getElementById('btnUnwatched');
         const btnWatched = document.getElementById('btnWatched');
+        const btnMax = document.getElementById('btnMax');
+        const btnMin = document.getElementById('btnMin');
+
+        let maxMinutes = null; // initialize with no limit
+        let minMinutes = null;
+
+        btnMax.addEventListener('click', () => {
+            const raw = prompt('Max duration in minutes (leave empty to clear):', maxMinutes ?? '');
+            if (raw === null) return; // user hit cancel
+            const n = raw.trim() === '' ? null : Number(raw);
+            if (n === null) {
+                maxMinutes = null;
+            } else if (Number.isFinite(n) && n >= 0) {
+                maxMinutes = n;
+            } else {
+                alert('Please enter a non-negative number.');
+                return;
+            }
+            render();
+        });
+
+        btnMin.addEventListener('click', () => {
+            const raw = prompt('Min duration in minutes (leave empty to clear):', maxMinutes ?? '');
+            if (raw === null) return; // user hit cancel
+            const n = raw.trim() === '' ? null : Number(raw);
+            if (n === null) {
+                minMinutes = null;
+            } else if (Number.isFinite(n) && n >= 0) {
+                minMinutes = n;
+            } else {
+                alert('Please enter a non-negative number.');
+                return;
+            }
+            render();
+        });
 
         const escapeHtml = (s) =>
             (s || "").replace(/[&<>"']/g, c => ({
@@ -64,6 +101,22 @@
             // comparison logic
             if (mode === 'unwatched') data = all.filter(v => !watchedSet.has(v.id));
             if (mode === 'watched') data = all.filter(v => watchedSet.has(v.id));
+
+            // max duration filter
+            if (maxMinutes !== null) {
+                data = data.filter(v => {
+                    const m = (v.approxdur ?? Number.POSITIVE_INFINITY);
+                    return m <= maxMinutes;
+                });
+            }
+
+            // min duration filter
+            if (minMinutes !== null) {
+                data = data.filter(v => {
+                    const m = (v.approxdur ?? Number.POSITIVE_INFINITY);
+                    return m >= minMinutes;
+                });
+            }
 
             rowsEl.innerHTML = data.map(v => `
             <tr>

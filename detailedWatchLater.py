@@ -74,17 +74,20 @@ def _build_detailed(ids: list[str], meta: dict[str, dict[str, str]]) -> list[dic
     out = []
     for vid in ids:
         info = meta.get(vid, {"title": "(unavailable)", "channel": "", "duration":""},)
+        duration,approxdur =  _parse_iso_duration(info.get("duration", ""))
         out.append({
             "id": vid,
             "title": info["title"],
             "channel": info["channel"],
-            "duration": _parse_iso_duration(info.get("duration", "")),
+            "duration":duration,
+            "approxdur":approxdur,
             "url":  f"https://youtu.be/{vid}",
             "thumb": f"https://i.ytimg.com/vi/{vid}/hqdefault.jpg",
         })
     return out
 
 #Convert Youtube API duration ISO: ex. from PT2H34M12S to 2:34:12
+#returns tuple: first value for display, second value for filtering
 def _parse_iso_duration(iso_str):
     hours = 0
     minutes = 0
@@ -92,11 +95,11 @@ def _parse_iso_duration(iso_str):
     
     #empty
     if not iso_str:
-        return ""
+        return ("", None)
     
     if not iso_str.startswith("PT"):
         print(f"[WARN] Unexpected duration format: {iso_str!r}")
-        return ""
+        return ("", None)
     
     iso_array = iso_str.split("PT")[1] # remove PT
     
@@ -110,13 +113,16 @@ def _parse_iso_duration(iso_str):
     
     if iso_array.find("S") != -1:
         seconds = int(iso_array.split("S")[0])
+        
+    # For duration filtering:
+    aproximateDuration = hours*60 + minutes
 
     if hours > 0:
-        return f"{hours}:{minutes:02}:{seconds:02}"
+        return f"{hours}:{minutes:02}:{seconds:02}",aproximateDuration
     elif minutes > 0:
-        return f"{minutes}:{seconds:02}"
+        return f"{minutes}:{seconds:02}",aproximateDuration
     else:
-        return f"{seconds}s"
+        return f"{seconds}s", aproximateDuration
     
     
 def main():
