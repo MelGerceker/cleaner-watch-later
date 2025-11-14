@@ -49,7 +49,7 @@ def _fetch_video_meta(youtube, ids: list[str]) -> dict[str, dict[str, str]]:
             meta[vid] = {
                 "title": sn.get("title", ""),
                 "channel": sn.get("channelTitle", ""),
-                "duration": cd.get("duration",""), #TODO: still returns ex. PT2H13M4S
+                "duration": cd.get("duration",""),
             }
     return meta
 

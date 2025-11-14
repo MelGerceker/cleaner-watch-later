@@ -23,9 +23,31 @@
         <button id="btnAll" class="active">All</button>
         <button id="btnUnwatched">Unwatched</button>
         <button id="btnWatched">Watched</button>
+        <!--
         <button id="btnMax">Max Duration</button>
         <button id="btnMin">Min Duration</button>
+        -->
+
         <span id="count" class="muted"></span>
+
+    </div>
+
+    <div class="duration-controls">
+        <strong>Duration filter (minutes):</strong>
+
+        <label>
+            Min
+            <input type="range" id="rangeMin" min="0" max="120" value="0" step="1">
+            <span id="labelMin">0</span>
+        </label>
+
+        <label>
+            Max
+            <input type="range" id="rangeMax" min="0" max="120" value="120" step="1">
+            <span id="labelMax">120</span>
+        </label>
+
+        <button id="btnDurReset" type="button">Reset</button>
     </div>
 
 
@@ -43,47 +65,52 @@
     </table>
 
     <script type="module">
+        import { initDurationSlider } from './slider.js';
+
+
         const rowsEl = document.getElementById('rows');
         const countEl = document.getElementById('count');
 
         const btnAll = document.getElementById('btnAll');
         const btnUnwatched = document.getElementById('btnUnwatched');
         const btnWatched = document.getElementById('btnWatched');
-        const btnMax = document.getElementById('btnMax');
-        const btnMin = document.getElementById('btnMin');
 
-        let maxMinutes = null; // initialize with no limit
-        let minMinutes = null;
-
-        btnMax.addEventListener('click', () => {
-            const raw = prompt('Max duration in minutes (leave empty to clear):', maxMinutes ?? '');
-            if (raw === null) return; // user hit cancel
-            const n = raw.trim() === '' ? null : Number(raw);
-            if (n === null) {
-                maxMinutes = null;
-            } else if (Number.isFinite(n) && n >= 0) {
-                maxMinutes = n;
-            } else {
-                alert('Please enter a non-negative number.');
-                return;
-            }
-            render();
-        });
-
-        btnMin.addEventListener('click', () => {
-            const raw = prompt('Min duration in minutes (leave empty to clear):', maxMinutes ?? '');
-            if (raw === null) return; // user hit cancel
-            const n = raw.trim() === '' ? null : Number(raw);
-            if (n === null) {
-                minMinutes = null;
-            } else if (Number.isFinite(n) && n >= 0) {
-                minMinutes = n;
-            } else {
-                alert('Please enter a non-negative number.');
-                return;
-            }
-            render();
-        });
+        /*
+           const btnMax = document.getElementById('btnMax');
+           const btnMin = document.getElementById('btnMin');
+           let maxMinutes = null; // initialize with no limit
+           let minMinutes = null;
+   
+           btnMax.addEventListener('click', () => {
+               const raw = prompt('Max duration in minutes (leave empty to clear):', maxMinutes ?? '');
+               if (raw === null) return; // user hit cancel
+               const n = raw.trim() === '' ? null : Number(raw);
+               if (n === null) {
+                   maxMinutes = null;
+               } else if (Number.isFinite(n) && n >= 0) {
+                   maxMinutes = n;
+               } else {
+                   alert('Please enter a non-negative number.');
+                   return;
+               }
+               render();
+           });
+   
+           btnMin.addEventListener('click', () => {
+               const raw = prompt('Min duration in minutes (leave empty to clear):', maxMinutes ?? '');
+               if (raw === null) return; // user hit cancel
+               const n = raw.trim() === '' ? null : Number(raw);
+               if (n === null) {
+                   minMinutes = null;
+               } else if (Number.isFinite(n) && n >= 0) {
+                   minMinutes = n;
+               } else {
+                   alert('Please enter a non-negative number.');
+                   return;
+               }
+               render();
+           });
+           */
 
         const escapeHtml = (s) =>
             (s || "").replace(/[&<>"']/g, c => ({
@@ -95,13 +122,15 @@
         let watchedSet = new Set(); // fast lookup
         let mode = 'all';    // 'all' | 'unwatched' | 'watched'
 
+        let durationSlider = null;
+
 
         const render = () => {
             let data = all;
-            // comparison logic
             if (mode === 'unwatched') data = all.filter(v => !watchedSet.has(v.id));
             if (mode === 'watched') data = all.filter(v => watchedSet.has(v.id));
 
+            /*
             // max duration filter
             if (maxMinutes !== null) {
                 data = data.filter(v => {
@@ -117,6 +146,21 @@
                     return m >= minMinutes;
                 });
             }
+                */
+
+            if (durationSlider) {
+                const { min, max } = durationSlider.getFilters();
+                if (min !== null || max !== null) {
+                    data = data.filter(v => {
+                        const m = v.approxdur;
+                        if (typeof m !== 'number' || !Number.isFinite(m)) return false;
+                        if (min !== null && m < min) return false;
+                        if (max !== null && m > max) return false;
+                        return true;
+                    });
+                }
+            }
+
 
             rowsEl.innerHTML = data.map(v => `
             <tr>
@@ -151,6 +195,10 @@
             .then(([wl, watchedIds]) => {
                 all = wl || [];
                 watchedSet = new Set(watchedIds || []);
+
+                durationSlider = initDurationSlider(() => render());
+                durationSlider.configureFromData(all);
+
                 render();
             })
             .catch(err => {

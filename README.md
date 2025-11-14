@@ -21,10 +21,9 @@ YouTube doesn’t natively provide this feature - this tool parses your data and
 ├── historyParser.py     # Parses watched video IDs from history
 ├── loadWatchLater.py     # Loads Watch Later IDs
 ├── saveHistory.py     # Saves history data to JSON
-├── testForAPI.py     # Initial API test script
-├── testForHistory.py     # History parsing test script
 ├── index.html     # Browser interface to display results
 ├── style.css     # Styling for the browser interface
+├── testing/    # Includes testing for API calls and watch history parser
 ├── data/     # Stores cached data (JSON, CSV, etc.)
 │ ├── meta_cache.json
 │ ├── watch_later_ids.json     # From loadWatchLater.py
