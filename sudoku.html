@@ -64,153 +64,41 @@
         <tbody id="rows"></tbody>
     </table>
 
-    <script type="module">
-        import { initDurationSlider } from './slider.js';
 
+    <script src="main.js"></script>
 
+    <script>
         const rowsEl = document.getElementById('rows');
         const countEl = document.getElementById('count');
-
         const btnAll = document.getElementById('btnAll');
         const btnUnwatched = document.getElementById('btnUnwatched');
         const btnWatched = document.getElementById('btnWatched');
 
-        /*
-           const btnMax = document.getElementById('btnMax');
-           const btnMin = document.getElementById('btnMin');
-           let maxMinutes = null; // initialize with no limit
-           let minMinutes = null;
-   
-           btnMax.addEventListener('click', () => {
-               const raw = prompt('Max duration in minutes (leave empty to clear):', maxMinutes ?? '');
-               if (raw === null) return; // user hit cancel
-               const n = raw.trim() === '' ? null : Number(raw);
-               if (n === null) {
-                   maxMinutes = null;
-               } else if (Number.isFinite(n) && n >= 0) {
-                   maxMinutes = n;
-               } else {
-                   alert('Please enter a non-negative number.');
-                   return;
-               }
-               render();
-           });
-   
-           btnMin.addEventListener('click', () => {
-               const raw = prompt('Min duration in minutes (leave empty to clear):', maxMinutes ?? '');
-               if (raw === null) return; // user hit cancel
-               const n = raw.trim() === '' ? null : Number(raw);
-               if (n === null) {
-                   minMinutes = null;
-               } else if (Number.isFinite(n) && n >= 0) {
-                   minMinutes = n;
-               } else {
-                   alert('Please enter a non-negative number.');
-                   return;
-               }
-               render();
-           });
-           */
+        const controller = window.createVideoTableController({
+            rowsEl,
+            countEl,
+            btnAll,
+            btnUnwatched,
+            btnWatched,
+        });
 
-        const escapeHtml = (s) =>
-            (s || "").replace(/[&<>"']/g, c => ({
-                '&': '&amp;', '<': '&lt;', '>': '&gt;',
-                '"': '&quot;', "'": '&#39;'
-            }[c]));
-
-        let all = [];        // [{id, title, duration, channel, url, thumb}]
-        let watchedSet = new Set(); // fast lookup
-        let mode = 'all';    // 'all' | 'unwatched' | 'watched'
-
-        let durationSlider = null;
-
-
-        const render = () => {
-            let data = all;
-            if (mode === 'unwatched') data = all.filter(v => !watchedSet.has(v.id));
-            if (mode === 'watched') data = all.filter(v => watchedSet.has(v.id));
-
-            /*
-            // max duration filter
-            if (maxMinutes !== null) {
-                data = data.filter(v => {
-                    const m = (v.approxdur ?? Number.POSITIVE_INFINITY);
-                    return m <= maxMinutes;
-                });
-            }
-
-            // min duration filter
-            if (minMinutes !== null) {
-                data = data.filter(v => {
-                    const m = (v.approxdur ?? Number.POSITIVE_INFINITY);
-                    return m >= minMinutes;
-                });
-            }
-                */
-
-            if (durationSlider) {
-                const { min, max } = durationSlider.getFilters();
-                if (min !== null || max !== null) {
-                    data = data.filter(v => {
-                        const m = v.approxdur;
-                        if (typeof m !== 'number' || !Number.isFinite(m)) return false;
-                        if (min !== null && m < min) return false;
-                        if (max !== null && m > max) return false;
-                        return true;
-                    });
-                }
-            }
-
-
-            rowsEl.innerHTML = data.map(v => `
-            <tr>
-            <td class="thumb"><img loading="lazy" src="${v.thumb}" alt=""></td>
-            <td>${escapeHtml(v.title)}</td>
-            <td>${escapeHtml(v.duration || "")}</td>
-            <td>${escapeHtml(v.channel)}</td>
-            <td><a href="${v.url}" target="_blank" rel="noopener">Open</a></td>
-            </tr>
-      `).join('');
-
-            // update counter and button
-            const totals = `(${data.length} shown • ${all.length} total)`;
-            if (mode === 'unwatched') {
-                countEl.textContent = `Unwatched ${totals}`;
-            } else if (mode === 'watched') {
-                countEl.textContent = `Watched ${totals}`;
-            } else {
-                countEl.textContent = `All ${totals}`;
-            }
-
-            [btnAll, btnUnwatched, btnWatched].forEach(b => b.classList.remove('active'));
-            (mode === 'all' ? btnAll : mode === 'unwatched' ? btnUnwatched : btnWatched)
-                .classList.add('active');
-        };
-
-        // Load both watch later and watch history
+        // Page specific data
         const wlP = fetch('data/sudoku-uploads.json?ts=' + Date.now()).then(r => r.json());
         const whP = fetch('data/watched_ids.json?ts=' + Date.now()).then(r => r.json());
 
         Promise.all([wlP, whP])
             .then(([wl, watchedIds]) => {
-                all = wl || [];
-                watchedSet = new Set(watchedIds || []);
+                controller.setData(wl, watchedIds);
 
-                durationSlider = initDurationSlider(() => render());
-                durationSlider.configureFromData(all);
+                // setup duration slider (also from main.js)
+                const slider = window.initDurationSlider(() => controller.render());
+                slider.configureFromData(wl);
+                controller.setDurationSlider(slider);
 
-                render();
+                // initial render
+                controller.render();
             })
             .catch(err => {
                 rowsEl.innerHTML = `<tr><td colspan="5">Failed to load data: ${err}</td></tr>`;
             });
-
-        // Buttons
-        btnAll.addEventListener('click', () => { mode = 'all'; render(); });
-        btnUnwatched.addEventListener('click', () => { mode = 'unwatched'; render(); });
-        btnWatched.addEventListener('click', () => { mode = 'watched'; render(); });
-
     </script>
-</body>
-
-</html>
