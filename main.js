@@ -71,7 +71,6 @@
 })();
 
 
-
 (function () {
 function initDurationSlider(onChange) {
     const rangeMinEl = document.getElementById('rangeMin');
