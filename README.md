@@ -35,3 +35,24 @@ YouTube doesn’t natively provide this feature - this tool parses your data and
 ## Example Preview
 
 <img width="1517" height="413" alt="image" src="https://github.com/user-attachments/assets/242b2446-6e45-49b5-b6ad-c672079337a6" />
+
+## How to Run
+````
+git clone https://github.com/MelGerceker/cleaner-watch-later.git
+cd cleaner-watch-later
+
+python -m venv .venv
+.\.venv\Scripts\activate.bat
+
+pip install -r requirements.txt
+````
+To add Youtube API credentials:
+
+1. Go to: https://console.cloud.google.com
+2. Create credentials → OAuth Client ID
+3. Download the JSON and save it as: client_secret.json
+
+token.json will be automatically created by auth flow during the first run, if it expires delete the json and login again.
+
+Run the preferred python files to load, parse, and build your data.
+Recommended to run index.html with VS Code Live Server.
