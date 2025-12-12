@@ -155,7 +155,7 @@ function initDurationSlider(onChange) {
     };
   }
 
-  // expose as global for normal <script> usage
+  // expose as global for normal <script> use
   window.initDurationSlider = initDurationSlider;
 })();
 
