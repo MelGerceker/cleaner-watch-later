@@ -19,6 +19,8 @@
         </button>
     </div>
 
+    <button id="btnUpdate">Update uploads</button>
+
     <div class="controls">
         <button id="btnAll" class="active">All</button>
         <button id="btnUnwatched">Unwatched</button>
@@ -96,4 +98,13 @@
             .catch(err => {
                 rowsEl.innerHTML = `<tr><td colspan="5">Failed to load data: ${err}</td></tr>`;
             });
+    </script>
+
+    <script>
+        document.getElementById('btnUpdate').addEventListener('click', async () => {
+            const res = await fetch('http://localhost:5000/run', { method: 'POST' });
+            const text = await res.text();
+            alert(text);
+        });
+
     </script>
