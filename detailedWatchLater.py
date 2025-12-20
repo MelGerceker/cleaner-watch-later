@@ -6,7 +6,6 @@ from googleapiclient.errors import HttpError
 
 from auth import get_credentials
 
-#Paths
 DATA_DIR   = Path("data")
 IDS_JSON   = DATA_DIR / "watch_later_ids.json"
 META_CACHE = DATA_DIR / "meta_cache.json"

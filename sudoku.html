@@ -102,9 +102,15 @@
 
     <script>
         document.getElementById('btnUpdate').addEventListener('click', async () => {
-            const res = await fetch('http://localhost:5000/run', { method: 'POST' });
-            const text = await res.text();
-            alert(text);
+            const res = await fetch('/run', { method: 'POST' });
+            const data = await res.json();
+
+            if (!data.success) {
+                alert("Error:\n" + data.error);
+                return;
+            }
+
+            alert(data.output);
         });
 
     </script>

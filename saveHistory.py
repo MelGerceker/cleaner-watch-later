@@ -1,4 +1,3 @@
-# save_history.py
 from pathlib import Path
 import json
 from historyParser import load_watched_ids_from_html

@@ -2,11 +2,11 @@ from pathlib import Path
 import csv
 import json
 
-CSV_PATH = Path("data/watch-later.csv")
+CSV_PATH = Path("personalData/watch-later.csv")
 OUT_JSON = Path("data/watch_later_ids.json")
 
 #Returns ordered list of video IDs
-#Column names: Video ID and Added Date
+#Column names: Video ID,Added Date
 
 def load_watch_later_ids(path: Path = CSV_PATH) -> list[str]:
     if not path.exists():
