@@ -30,6 +30,8 @@
 
     </div>
 
+    <!--
+
     <div class="duration-controls">
         <strong>Duration filter (minutes):</strong>
 
@@ -47,6 +49,32 @@
 
         <button id="btnDurReset" type="button">Reset</button>
     </div>
+        -->
+
+
+    <div class="range_container">
+        <div class="sliders_control">
+            <input id="fromSlider" type="range" value="10" min="0" max="120" />
+            <input id="toSlider" type="range" value="30" min="0" max="120" />
+        </div>
+
+        <div class="form_control">
+            <div class="form_control_container">
+                <div class="form_control_container__time">Min</div>
+
+                <span id="labelMin" class="form_control_container__time__input">10</span>
+
+            </div>
+            <div class="form_control_container">
+                <div class="form_control_container__time">Max</div>
+                <span id="labelMax" class="form_control_container__time__input">30</span>
+
+            </div>
+        </div>
+    </div>
+
+
+
 
 
     <table>
@@ -90,7 +118,7 @@
 
                 // setup duration slider (also from main.js)
                 const slider = window.initDurationSlider(() => controller.render());
-                slider.configureFromData(wl);
+                //slider.configureFromData(wl);
                 controller.setDurationSlider(slider);
 
                 controller.render();

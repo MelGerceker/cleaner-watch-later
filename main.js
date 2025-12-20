@@ -71,6 +71,7 @@
 })();
 
 
+/*
 (function () {
 function initDurationSlider(onChange) {
     const rangeMinEl = document.getElementById('rangeMin');
@@ -156,6 +157,70 @@ function initDurationSlider(onChange) {
   }
 
   // expose as global for normal <script> use
+  window.initDurationSlider = initDurationSlider;
+})();
+
+*/
+(function () {
+function initDurationSlider(onChange) {
+const fromSlider = document.querySelector('#fromSlider');
+const toSlider = document.querySelector('#toSlider');
+const labelMin = document.querySelector('#labelMin');
+const labelMax  = document.querySelector('#labelMax');
+
+
+    const bounds = { min: parseInt(fromSlider.min), max: parseInt(fromSlider.max) };
+    const filters = { min: null, max: null };
+
+    function syncSliders(changedEl) {
+      let minVal = Number(fromSlider.value);
+      let maxVal = Number(toSlider.value);
+
+      // Prevent crossing
+      if (minVal > maxVal) {
+        if (changedEl === fromSlider) {
+          maxVal = minVal;
+          toSlider.value = maxVal;
+        } else {
+          minVal = maxVal;
+          fromSlider.value = minVal;
+        }
+      }
+
+      // TODO: look into this where the filters are at extreme or not, should be disable option
+      filters.min = minVal <= bounds.min ? null : minVal;
+      filters.max = maxVal >= bounds.max ? null : maxVal;
+
+      labelMin.textContent = filters.min === null ? 'any' : minVal;
+      labelMax.textContent = filters.max === null ? 'any' : maxVal;
+
+      // Update gradient
+      const rangeDist = bounds.max - bounds.min;
+      const fromPos = minVal - bounds.min;
+      const toPos = maxVal - bounds.min;
+      toSlider.style.background = `linear-gradient(
+        to right,
+        #C6C6C6 0%,
+        #C6C6C6 ${(fromPos / rangeDist) * 100}%,
+        #25daa5 ${(fromPos / rangeDist) * 100}%,
+        #25daa5 ${(toPos / rangeDist) * 100}%,
+        #C6C6C6 ${(toPos / rangeDist) * 100}%,
+        #C6C6C6 100%
+      )`;
+
+      if (typeof onChange === 'function') onChange();
+    }
+
+    fromSlider.addEventListener('input', () => syncSliders(fromSlider));
+    toSlider.addEventListener('input', () => syncSliders(toSlider));
+
+    syncSliders(fromSlider);
+
+    return {
+      getFilters: () => ({ ...filters })
+    };
+  }
+
   window.initDurationSlider = initDurationSlider;
 })();
 
