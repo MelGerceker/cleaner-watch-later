@@ -54,7 +54,12 @@ To add Youtube API credentials:
 
 token.json will be automatically created by auth flow during the first run, if it expires delete the json and login again.
 
-Run the preferred python files to load, parse, and build your data. For the watch later section run the files below in order:
+Run the preferred python files to load, parse, and build your data. For the watch later section run the files below in order: <br>
 saveHistory.py, loadWatchLater.py, detailedWatchLater.py
 
 Recommended to run index.html with VS Code Live Server.
+
+### Credits
+
+The duration slider filter used in sudoku.html was used after modifications. <br>
+Original code by Predrag (https://codepen.io/predragdavidovic/pen/mdpMoWo), MIT License.  
